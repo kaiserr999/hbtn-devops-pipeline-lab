@@ -60,3 +60,7 @@ jobs:
 
       - name: Run the integration tests
         run: npm run test:integration
+        env:
+          # The job runs on the runner host, so it reaches the postgres service
+          # through the port published on localhost.
+          DATABASE_URL: postgres://pipeline:pipeline@localhost:5432/pipeline
