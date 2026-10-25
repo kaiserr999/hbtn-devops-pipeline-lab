@@ -69,12 +69,20 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Run the unit tests
-        run: npm run test:unit
-
-      - name: Run the integration tests
-        run: npm run test:integration
+      - name: Run the tests
+        run: npm test -- --reporters=default --reporters=jest-junit
         env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports
           # The job runs on the runner host, so it reaches the postgres service
           # through the port published on localhost.
           DATABASE_URL: postgres://pipeline:pipeline@localhost:5432/pipeline
+
+      # always() keeps the report even when a test fails, which is when it
+      # matters most.
+      - name: Upload the JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: reports/
+          retention-days: 7
