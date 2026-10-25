@@ -52,6 +52,17 @@ jobs:
         with:
           node-version: '20'
 
+      # Cache npm's download cache, not node_modules: npm ci still installs
+      # the exact tree from the lock file. A lock-file change produces a new
+      # exact key; the restore prefix can still recover an older cache.
+      - name: Cache the npm download cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
       - name: Install dependencies
         run: npm ci
 
